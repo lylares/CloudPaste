@@ -56,80 +56,115 @@ const styles = `
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 1000;
+  z-index: 1001; /* 确保在管理面板之上 */
   color: #333;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .github-link:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 15px rgba(0,0,0,0.15);
+}
+
+/* 添加下拉菜单样式 */
+.menu-dropdown {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+  padding: 0.5rem;
+  z-index: 999;
+  min-width: 150px;
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.menu-dropdown.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  color: #333;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.menu-item:hover {
+  background: #f5f5f5;
   color: var(--primary-color);
 }
 
-.github-icon {
-  transition: transform 0.3s ease;
+.menu-item svg {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
 }
 
-.github-link:hover .github-icon {
-  transform: scale(1.1);
+/* 暗色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .github-link {
+    background: #2d2d2d;
+    color: #e4e4e4;
+  }
+
+  .menu-dropdown {
+    background: #2d2d2d;
+    border: 1px solid #3d3d3d;
+  }
+
+  .menu-item {
+    color: #e4e4e4;
+  }
+
+  .menu-item:hover {
+    background: #3d3d3d;
+  }
 }
 
 /* 移动端适配 */
 @media (max-width: 768px) {
-  .container {
+  .github-link {
+    top: 10px;
+    right: 10px;
+  }
+
+  .menu-dropdown {
+    top: 60px;
+    right: 10px;
+    width: auto;
+    min-width: 200px;
+  }
+
+  .menu-item {
     padding: 1rem;
-  }
-
-  .card {
-    padding: 1rem;
-    width: 100%;
-    min-width: auto;
-  }
-
-  .editor-container {
-    flex-direction: column;
-    height: auto;
-    min-height: 200px;
-    resize: vertical;
-  }
-
-  .editor, .preview {
-    height: 300px;
-    min-width: auto;
-    width: 100%;
-  }
-
-  .settings {
-    grid-template-columns: 1fr;
-  }
-
-  .file-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .file-item .size {
-    margin: 0;
-  }
-
-  .admin-panel {
-    right: 70px;  
   }
 
   .admin-content {
     width: 100%;
+    padding-top: 3.5rem;
   }
 
-  .link {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .link button {
-    width: 100%;
-  }
-
-  .github-link {
+  .close-btn {
     top: 10px;
     right: 10px;
   }
@@ -137,6 +172,15 @@ const styles = `
 
 /* 超小屏幕适配 */
 @media (max-width: 480px) {
+  .container {
+    padding: 0.5rem;
+  }
+
+  .card {
+    padding: 0.8rem;
+    margin: 0;
+  }
+
   .tabs {
     flex-direction: column;
     gap: 0.5rem;
@@ -145,6 +189,11 @@ const styles = `
   .tab {
     width: 100%;
     text-align: center;
+    padding: 0.8rem;
+  }
+
+  .editor, .preview {
+    height: 250px;
   }
 
   .file-drop {
@@ -155,16 +204,26 @@ const styles = `
     grid-template-columns: 1fr;
   }
 
-  .editor-container {
-    min-height: 150px;
-  }
-
-  .editor, .preview {
-    height: 250px;
-  }
-
-  .card {
+  .stat-card {
     padding: 0.8rem;
+  }
+
+  .share-item {
+    padding: 0.8rem;
+  }
+
+  .share-item .actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .share-item .actions button {
+    width: 100%;
+  }
+
+  .confirm-content {
+    width: 95%;
+    padding: 1rem;
   }
 }
 
@@ -423,11 +482,17 @@ body {
 }
 
 .admin-login {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: white;
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-  min-width: 300px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+  min-width: 320px;
+  max-width: 90%;
+  z-index: 1002; /* 确保显示在最上层 */
 }
 
 .admin-content {
@@ -439,7 +504,9 @@ body {
   background: white;
   box-shadow: -2px 0 15px rgba(0,0,0,0.1);
   padding: 1.5rem;
+  padding-top: 4rem; /* 增加顶部内边距，为 GitHub 图标留出空间 */
   overflow-y: auto;
+  z-index: 1000;
 }
 
 .admin-header {
@@ -531,6 +598,9 @@ body {
 }
 
 .close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
   width: 32px;
   height: 32px;
   padding: 0;
@@ -544,6 +614,7 @@ body {
   align-items: center;
   justify-content: center;
   color: #666;
+  z-index: 1000;
 }
 
 .close-btn:hover {
@@ -1614,6 +1685,302 @@ body {
   font-size: 0.9rem;
   color: #666;
 }
+
+/* 优化触摸交互 */
+.btn, .tab, .control-btn {
+  min-height: 44px; /* 增加触摸区域 */
+  padding: 0.8rem 1rem;
+}
+
+input, select {
+  min-height: 44px;
+  font-size: 16px; /* 防止 iOS 缩放 */
+}
+
+/* 优化字体大小 */
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+
+  .card {
+    font-size: 15px;
+  }
+
+  .btn, .tab, input, select {
+    font-size: 15px;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+  }
+}
+
+/* 添加平滑滚动 */
+.editor, .preview {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 优化暗色模式 */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1a1a1a;
+    color: #e4e4e4;
+  }
+
+  .card {
+    background: #2d2d2d;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  input, select, textarea {
+    background: #3d3d3d;
+    color: #e4e4e4;
+    border-color: #4d4d4d;
+  }
+
+  .btn {
+    background: #4a4a4a;
+  }
+
+  .file-drop {
+    border-color: #4d4d4d;
+  }
+
+  .admin-content {
+    background: #2d2d2d;
+  }
+}
+
+/* 添加更细致的响应式断点 */
+/* 超大屏幕 */
+@media (min-width: 1400px) {
+  .card {
+    min-width: 1200px;
+  }
+}
+
+/* 大屏幕 */
+@media (max-width: 1399px) and (min-width: 1200px) {
+  .card {
+    min-width: 1000px;
+  }
+}
+
+/* 中等屏幕 */
+@media (max-width: 1199px) and (min-width: 992px) {
+  .card {
+    min-width: 900px;
+  }
+}
+
+/* 小屏幕 */
+@media (max-width: 991px) and (min-width: 768px) {
+  .card {
+    min-width: 700px;
+  }
+  
+  .editor-container {
+    height: 500px;
+  }
+}
+
+/* 平板 */
+@media (max-width: 767px) and (min-width: 576px) {
+  .card {
+    min-width: auto;
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .editor-container {
+    height: 400px;
+  }
+}
+
+/* 手机横屏 */
+@media (max-width: 575px) and (min-width: 481px) {
+  .card {
+    min-width: auto;
+    width: 95%;
+    padding: 1.2rem;
+  }
+
+  .editor-container {
+    height: 350px;
+  }
+}
+
+/* 手机竖屏 */
+@media (max-width: 480px) {
+  .card {
+    min-width: auto;
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .editor-container {
+    height: 300px;
+  }
+}
+
+/* 确保基础容器在所有尺寸下都能正常工作 */
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+/* 添加遮罩层 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 登录框标题 */
+.admin-login h3 {
+  margin: 0 0 1.5rem 0;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* 优化输入框样式 */
+.admin-login .input-group {
+  margin-bottom: 1.2rem;
+}
+
+.admin-login .input-group:last-of-type {
+  margin-bottom: 1.5rem;
+}
+
+.admin-login .input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #34495e;
+  font-weight: 500;
+}
+
+.admin-login .input-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.admin-login .input-group input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+/* 登录按钮组样式 */
+.admin-login .actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.admin-login .actions .btn {
+  flex: 1;
+  padding: 0.8rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.admin-login .actions .btn:last-child {
+  background: #95a5a6;
+}
+
+/* 错误信息样式 */
+.admin-login .error {
+  color: #e74c3c;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* 暗色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .admin-login {
+    background: #2d2d2d;
+  }
+
+  .admin-login h3 {
+    color: #e4e4e4;
+  }
+
+  .admin-login .input-group label {
+    color: #e4e4e4;
+  }
+
+  .admin-login .input-group input {
+    background: #3d3d3d;
+    border-color: #4d4d4d;
+    color: #e4e4e4;
+  }
+
+  .admin-login .actions .btn:last-child {
+    background: #666;
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .admin-login {
+    width: 90%;
+    min-width: auto;
+    padding: 1.5rem;
+  }
+}
+
+/* 添加管理面板遮罩层 */
+.admin-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999; /* 确保在 GitHub 图标下方，但在其他内容上方 */
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 修改管理面板样式 */
+.admin-content {
+  position: relative; /* 改为相对定位 */
+  width: 350px;
+  height: 100%;
+  background: white;
+  box-shadow: -2px 0 15px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  padding-top: 4rem;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .admin-content {
+    width: 100%;
+  }
+}
 `;
 
 // Vue 应用代码
@@ -1662,7 +2029,7 @@ createApp({
     const newPassword = ref('');
     const passwordError = ref('');
 
-    // 在 setup() 函数中添加新的状态
+    // 在 setup() 中添加新的状态
     const storageInfo = ref({
       used: 0,
       total: ${MAX_TOTAL_STORAGE},
@@ -2300,6 +2667,25 @@ createApp({
     // 在 setup() 中添加新的状态
     const showAdminPanel = ref(false); // 默认不显示面板
 
+    // 添加菜单状态
+    const showMenu = ref(false);
+
+    // 添加切换菜单方法
+    const toggleMenu = () => {
+      showMenu.value = !showMenu.value;
+    };
+
+    // 添加点击外部关闭菜单
+    onMounted(() => {
+      document.addEventListener('click', (e) => {
+        const menu = document.querySelector('.menu-dropdown');
+        const button = document.querySelector('.github-link');
+        if (!menu?.contains(e.target) && !button?.contains(e.target)) {
+          showMenu.value = false;
+        }
+      });
+    });
+
     return {
       activeTab,
       content,
@@ -2361,21 +2747,39 @@ createApp({
       storageInfo,
       formatStorageSize,
       showAdminPanel,
+      showMenu,
+      toggleMenu,
     };
   },
 
   template: \`
   <div class="container">
+    <!-- GitHub 图标和下拉菜单 -->
+    <div class="github-link" @click="toggleMenu" title="菜单">
+      <svg height="32" width="32" viewBox="0 0 16 16">
+        <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+      </svg>
+    </div>
 
-  <a href="https://github.com/ling-drag0n/CloudPaste" 
-     target="_blank" 
-     class="github-link" 
-     title="Visit GitHub">
-    <svg height="32" width="32" viewBox="0 0 16 16" class="github-icon">
-      <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-    </svg>
-  </a>
-
+    <!-- 下拉菜单 -->
+    <div class="menu-dropdown" :class="{ show: showMenu }">
+      <a href="https://github.com/ling-drag0n/CloudPaste" 
+         target="_blank" 
+         class="menu-item"
+         @click="showMenu = false">
+        <svg viewBox="0 0 16 16">
+          <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+        </svg>
+        前往 GitHub
+      </a>
+      <div class="menu-item" 
+           @click="showAdminLogin = !isAdmin; showAdminPanel = isAdmin; showMenu = false">
+        <svg viewBox="0 0 16 16">
+          <path fill="currentColor" d="M8 0a8 8 0 100 16A8 8 0 008 0zm3.5 8.5a.5.5 0 01-.5.5H5a.5.5 0 010-1h6a.5.5 0 01.5.5z"/>
+        </svg>
+        {{ isAdmin ? '管理面板' : '管理员登录' }}
+      </div>
+    </div>
 
     <div class="card">
       <!-- 标签页切换 -->
@@ -2559,23 +2963,10 @@ createApp({
       </div>
     </div>
 
-    <!-- 管理员面板 -->
-    <div class="admin-panel">
-      <!-- 管理员登录按钮 -->
-      <button v-if="(!isAdmin || !showAdminPanel) && !showAdminLogin" 
-              class="btn" 
-              @click="() => {
-                if(isAdmin) {
-                  showAdminPanel = true;
-                } else {
-                  showAdminLogin = true;
-                }
-              }">
-        {{ isAdmin ? '管理面板' : '管理员登录' }}
-      </button>
-
-      <!-- 管理员登录表单 -->
-      <div v-if="showAdminLogin" class="admin-login">
+    <!-- 管理员登录和面板 (移除原来的按钮，只保留弹窗部分) -->
+    <div v-if="showAdminLogin" class="modal-overlay" @click.self="showAdminLogin = false">
+      <div class="admin-login">
+        <h3>管理员登录</h3>
         <div class="input-group">
           <label>用户名</label>
           <input type="text" v-model="adminUsername">
@@ -2599,13 +2990,15 @@ createApp({
         </div>
         <div v-if="adminError" class="error">{{ adminError }}</div>
         <div class="actions">
-          <button class="btn" @click="adminLogin">确定</button>
+          <button class="btn" @click="adminLogin">登录</button>
           <button class="btn" @click="showAdminLogin = false">取消</button>
         </div>
       </div>
+    </div>
 
-      <!-- 管理员内容面板 -->
-      <div v-if="isAdmin && showAdminPanel" class="admin-content">
+    <!-- 管理员面板 -->
+    <div v-if="isAdmin && showAdminPanel" class="admin-overlay" @click.self="showAdminPanel = false">
+      <div class="admin-content">
         <div class="admin-header">
           <div class="admin-header-top">
             <h3>分享管理</h3>
@@ -2714,7 +3107,6 @@ createApp({
                 </div>
             </div>
         </div>
-
       </div>
     </div>
 
@@ -3031,14 +3423,34 @@ const html = `<!DOCTYPE html>
 </head>
 <body>
     <div id="app">
-        <a href="https://github.com/ling-drag0n/CloudPaste" 
-            target="_blank" 
-            class="github-link" 
-            title="Visit GitHub">
-            <svg height="32" width="32" viewBox="0 0 16 16" class="github-icon">
+        <!-- 修改 GitHub 图标部分 -->
+        <div class="github-link" @click="toggleMenu" title="菜单">
+            <svg height="32" width="32" viewBox="0 0 16 16">
                 <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
             </svg>
-        </a>
+        </div>
+
+        <!-- 添加下拉菜单 -->
+        <div class="menu-dropdown" :class="{ show: showMenu }">
+            <a href="https://github.com/ling-drag0n/CloudPaste" 
+               target="_blank" 
+               class="menu-item"
+               @click="showMenu = false">
+                <svg viewBox="0 0 16 16">
+                    <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+                前往 GitHub
+            </a>
+            <div class="menu-item" 
+                 @click="showAdminLogin = !isAdmin; showAdminPanel = isAdmin; showMenu = false">
+                <svg viewBox="0 0 16 16">
+                    <path fill="currentColor" d="M8 0a8 8 0 100 16A8 8 0 008 0zm3.5 8.5a.5.5 0 01-.5.5H5a.5.5 0 010-1h6a.5.5 0 01.5.5z"/>
+                </svg>
+                {{ isAdmin ? '管理面板' : '管理员登录' }}
+            </div>
+        </div>
+
+        <!-- 其他内容保持不变 -->
     </div>
     <script>${appScript}</script>
 </body>
