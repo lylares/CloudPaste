@@ -4,7 +4,8 @@
 ![Vue.js](https://img.shields.io/badge/Vue.js-3.x-green?style=flat-square&logo=vue.js)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 
-一个基于 Cloudflare Workers 的在线剪贴板和文件分享服务。支持 Markdown、密码保护、文件上传等功能。
+一个基于 Cloudflare Workers 的「当用户」在线剪贴板和文件分享服务。支持 Markdown、密码保护、文件上传等功能。
+该项目在CloudPaste 的基础上增加了多用户功能，并优化了部分前端页面功能和适配移动端。
 
 
 <table>
