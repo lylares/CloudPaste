@@ -1,5 +1,5 @@
 // 在文件开头添加常量声明
-const MAX_FILE_SIZE = 25 * 1024 * 1024; // 文件大小限制 (25MB)
+const MAX_FILE_SIZE = 25 * 10 * 1024 * 1024; // 文件大小限制 (25MB)
 const MAX_TOTAL_STORAGE = 5 * 1024 * 1024 * 1024; // 总存储限制 (5GB)
 
 // 工具函数
